@@ -7,7 +7,7 @@ import * as yup from "yup";
 import { Facebook, Phone } from "@material-ui/icons";
 import { signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 
-import LoginStyles from "./login.style";
+import LoginStyles from "./styles";
 
 import { authFirebase, provider } from "utils/firebase";
 
