@@ -1,7 +1,7 @@
 import { Route, Switch, Redirect } from "react-router-dom";
 import { FC } from "react";
 
-import { Home, Login } from "pages";
+import { Home, Login, SignIn } from "pages";
 
 const routers = [
   {
@@ -14,6 +14,12 @@ const routers = [
     path: "/login",
     exact: true,
     component: Login,
+    isPrivate: false,
+  },
+  {
+    path: "/signin",
+    exact: true,
+    component: SignIn,
     isPrivate: false,
   },
 ];

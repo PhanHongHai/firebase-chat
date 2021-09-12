@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import produce from "immer";
 
+import { authActions } from "./auth";
+
 interface StatusNotification {
   type: "success" | "warning" | "error" | "info";
   message: string;
@@ -31,6 +33,31 @@ export const configSlice = createSlice({
         return draft;
       });
     },
+  },
+  extraReducers: (builder) => {
+    builder.addCase(authActions.signinRequest.fulfilled, (state) => {
+      return produce(state, (draft) => {
+        draft.statusNotification = {
+          message: "Signin success ",
+          show: true,
+          type: "success",
+        };
+        return draft;
+      });
+    });
+    builder.addCase(
+      authActions.signinRequest.rejected,
+      (state, action: PayloadAction<any>) => {
+        return produce(state, (draft) => {
+          draft.statusNotification = {
+            message: action.payload || "Something wrong. Please try again!",
+            show: true,
+            type: "error",
+          };
+          return draft;
+        });
+      }
+    );
   },
 });
 

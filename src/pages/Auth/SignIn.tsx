@@ -4,13 +4,11 @@ import { useForm } from "react-hook-form";
 import Grid from "@material-ui/core/Grid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useHistory } from "react-router-dom";
 import { useAppDispatch } from "redux/store";
 import AuthStyles from "./styles";
 
-import { authFirebase } from "utils/firebase";
-import { authActions, configActions } from "redux/actions";
+import { authActions } from "redux/actions";
 
 type FormValues = {
   email: string;
@@ -44,31 +42,7 @@ const SignIn: FC = () => {
   const onSubmit = (data: FormValues) => {
     if (data) {
       setLoading(true);
-      createUserWithEmailAndPassword(authFirebase, data.email, data.password)
-        .then((userCredential: any) => {
-          const user = userCredential.user;
-          setLoading(false);
-          dispatch(authActions.setUserData(user));
-          history.push("/");
-          dispatch(
-            configActions.setNotification({
-              message: "Signin success ",
-              show: true,
-              type: "success",
-            })
-          );
-        })
-        .catch((e) => {
-          const errorMessage = e.message;
-          setLoading(false);
-          dispatch(
-            configActions.setNotification({
-              message: errorMessage || "Something wrong. Please try again!",
-              show: true,
-              type: "error",
-            })
-          );
-        });
+      dispatch(authActions.signinRequest(data));
     }
   };
 
@@ -120,6 +94,16 @@ const SignIn: FC = () => {
                     disabled={loading}
                   >
                     SignIn
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      history.push("/login");
+                    }}
+                    variant="contained"
+                    color="primary"
+                    disabled={loading}
+                  >
+                    Login
                   </Button>
                 </Grid>
               </Grid>
