@@ -1,11 +1,19 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, } from "firebase/firestore/lite";
-import { GoogleAuthProvider, getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore/lite";
+import {
+  GoogleAuthProvider,
+  FacebookAuthProvider,
+  getAuth,
+} from "firebase/auth";
 
 // Your web app's Firebase configuration
 
+console.log('a',process.env.PORT);
+console.log('a',process.env.REACT_APP_FIREBASE_API_KEY);
+
+
 const firebaseConfig = {
-  apiKey: "AIzaSyC2r6b2sS7IROGvCDijr1Rn5oMG-YRjqw0",
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "",
 
   authDomain: "prj1-b3aac.firebaseapp.com",
 
@@ -15,20 +23,26 @@ const firebaseConfig = {
 
   storageBucket: "prj1-b3aac.appspot.com",
 
-  messagingSenderId: "931433149766",
+  messagingSenderId: process.env.REACT_APP_FIREBASE_SENDER_ID || "",
 
-  appId: "1:931433149766:web:09619def9e30f16354e147",
+  appId: process.env.REACT_APP_FIREBASE_APP_ID || "",
 };
 
 const app = initializeApp(firebaseConfig);
 // Get a reference to the storage service, which is used to create references in your storage bucket
 const db = getFirestore(app);
 
-const provider = new GoogleAuthProvider();
-provider.addScope("https://www.googleapis.com/auth/contacts.readonly");
+const providerGoogle = new GoogleAuthProvider();
+const providerFacebook = new FacebookAuthProvider();
 const authFirebase = getAuth();
-authFirebase.languageCode = "vn";
 
-export { db, authFirebase, provider };
+providerGoogle.addScope("https://www.googleapis.com/auth/contacts.readonly");
+authFirebase.languageCode = "vn";
+providerFacebook.setCustomParameters({
+  display: "popup",
+});
+
+
+export { db, authFirebase, providerGoogle, providerFacebook };
 
 export default app;

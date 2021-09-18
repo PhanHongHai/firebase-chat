@@ -1,7 +1,9 @@
-import { Route, Switch, Redirect } from "react-router-dom";
+import { Route, Switch, Redirect, useHistory } from "react-router-dom";
 import { FC } from "react";
+import { Button } from "@material-ui/core";
+import { ArrowBack } from "@material-ui/icons";
 
-import { Home, Login, SignIn } from "pages";
+import { Home, SignIn, SignUp } from "pages";
 
 const routers = [
   {
@@ -11,15 +13,15 @@ const routers = [
     isPrivate: true,
   },
   {
-    path: "/login",
-    exact: true,
-    component: Login,
-    isPrivate: false,
-  },
-  {
     path: "/signin",
     exact: true,
     component: SignIn,
+    isPrivate: false,
+  },
+  {
+    path: "/signup",
+    exact: true,
+    component: SignUp,
     isPrivate: false,
   },
 ];
@@ -36,7 +38,7 @@ const AuthorizeRoute: FC<any> = (props) => {
         ) : (
           <Redirect
             to={{
-              pathname: "/login",
+              pathname: "/signin",
               state: { from: routeProps.location },
             }}
           />
@@ -46,16 +48,43 @@ const AuthorizeRoute: FC<any> = (props) => {
   );
 };
 
-const RootRoute = () => {
+const RootRoute: FC = () => {
+  const history = useHistory();
   return (
     <Switch>
-      {routers.map((ele) =>
-        ele.isPrivate ? (
-          <AuthorizeRoute {...ele} />
+      {routers.map((route) =>
+        route.isPrivate ? (
+          <AuthorizeRoute key={route.path} {...route} />
         ) : (
-          <Route path={ele.path} component={ele.component} exact={ele.exact} />
+          <Route
+            key={route.path}
+            path={route.path}
+            component={route.component}
+            exact={route.exact}
+          />
         )
       )}
+      <Route
+        path="*"
+        component={() => (
+          <div className="notfound">
+            <h1>Not found</h1>
+            <Button
+              onClick={() => {
+                history.goBack();
+              }}
+              style={{
+                marginTop: 10,
+              }}
+              startIcon={<ArrowBack />}
+              variant="outlined"
+              color="primary"
+            >
+              Back
+            </Button>
+          </div>
+        )}
+      />
     </Switch>
   );
 };

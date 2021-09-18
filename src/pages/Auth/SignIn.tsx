@@ -1,14 +1,17 @@
 import React, { FC, useState } from "react";
-import { TextField, Button, Box } from "@material-ui/core";
+import { TextField, Button, Box, Divider, IconButton } from "@material-ui/core";
 import { useForm } from "react-hook-form";
 import Grid from "@material-ui/core/Grid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { Facebook, Phone } from "@material-ui/icons";
 import { useHistory } from "react-router-dom";
-import { useAppDispatch } from "redux/store";
-import AuthStyles from "./styles";
 
-import { authActions } from "redux/actions";
+import { useAppDispatch } from "redux/store";
+
+import LoginStyles from "./styles";
+
+import { AuthRepository } from "redux/repository";
 
 type FormValues = {
   email: string;
@@ -20,7 +23,11 @@ const schema = yup.object().shape({
   password: yup.string().required("Password is required!"),
 });
 
-const SignIn: FC = () => {
+const Login: FC = () => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const history = useHistory();
+
   const {
     register,
     formState: { errors },
@@ -28,22 +35,44 @@ const SignIn: FC = () => {
   } = useForm<FormValues>({
     resolver: yupResolver(schema),
   });
-
-  const classes = AuthStyles();
-  const [loading, setLoading] = useState<boolean>(false);
-  const dispatch = useAppDispatch();
-
-  const history = useHistory();
-
+  const classes = LoginStyles();
   /**
-   * handle submit form signin
-   * @param data form data
+   * handle login
+   * @param data
    */
   const onSubmit = (data: FormValues) => {
-    if (data) {
-      setLoading(true);
-      dispatch(authActions.signinRequest(data));
-    }
+    setLoading(true);
+    dispatch(AuthRepository.signinRequest(data))
+      .then(() => {
+        history.push("/");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+  /**
+   *
+   */
+  const onLoginByGoogle = () => {
+    setLoading(true);
+    dispatch(AuthRepository.signinGoogleRequest({}))
+      .then(() => {
+        history.push("/");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  };
+
+  const onLoginByFacebook = () => {
+    setLoading(true);
+    dispatch(AuthRepository.signinFacebookRequest({}))
+      .then(() => {
+        history.push("/");
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
@@ -93,18 +122,44 @@ const SignIn: FC = () => {
                     color="primary"
                     disabled={loading}
                   >
-                    SignIn
+                    Login
                   </Button>
                   <Button
                     onClick={() => {
-                      history.push("/login");
+                      history.push("/signup");
                     }}
                     variant="contained"
-                    color="primary"
+                    color="secondary"
+                  >
+                    SignUp
+                  </Button>
+                </Grid>
+                <Divider />
+                <p>Other login with</p>
+                <Grid item xs={12}>
+                  <IconButton
+                    onClick={onLoginByGoogle}
+                    className={classes.btn}
+                    color="default"
                     disabled={loading}
                   >
-                    Login
-                  </Button>
+                    G
+                  </IconButton>
+                  <IconButton
+                    onClick={onLoginByFacebook}
+                    className={classes.btn}
+                    color="default"
+                    disabled={loading}
+                  >
+                    <Facebook />
+                  </IconButton>
+                  <IconButton
+                    className={classes.btn}
+                    color="default"
+                    disabled={loading}
+                  >
+                    <Phone />
+                  </IconButton>
                 </Grid>
               </Grid>
             </Grid>
@@ -115,4 +170,4 @@ const SignIn: FC = () => {
   );
 };
 
-export default SignIn;
+export default Login;
