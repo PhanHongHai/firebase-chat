@@ -53,6 +53,15 @@ export const authSlice = createSlice({
         });
       }
     );
+    builder.addCase(
+      AuthRepository.signinFacebookRequest.fulfilled,
+      (state, action: PayloadAction<UserData>) => {
+        return produce(state, (draft) => {
+          draft.user = action.payload || {};
+          return draft;
+        });
+      }
+    );
   },
 });
 

@@ -1,7 +1,7 @@
 import { Route, Switch, Redirect, useHistory } from "react-router-dom";
 import { FC } from "react";
-import { Button } from "@material-ui/core";
-import { ArrowBack } from "@material-ui/icons";
+import  Button from "@mui/material/Button";
+import { ArrowBack } from "@mui/icons-material";
 
 import { Home, SignIn, SignUp } from "pages";
 

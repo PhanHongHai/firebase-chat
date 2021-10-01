@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useState } from "react";
-import { Snackbar } from "@material-ui/core";
-import Alert from "@material-ui/lab/Alert";
+import Alert from "@mui/material/Alert";
+import Snackbar from "@mui/material/Snackbar";
 
 // import { configActions } from "redux/actions";
 import { useAppSelector } from "redux/store";
@@ -15,7 +15,9 @@ const Layout: FC = ({ children }) => {
       const timeoutId = setTimeout(() => {
         setVisible(false);
       }, 2500);
-      return () => clearTimeout(timeoutId);
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
   }, [statusNotification]);
 
@@ -35,8 +37,7 @@ const Layout: FC = ({ children }) => {
         }}
       >
         <Alert onClose={handleClose} severity={statusNotification.type}>
-          {statusNotification.message ||
-            "Something went wrong.Please try again!"}
+          {statusNotification.message || "Something went wrong.Please try again!"}
         </Alert>
       </Snackbar>
     </div>

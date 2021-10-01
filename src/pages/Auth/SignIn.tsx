@@ -1,17 +1,25 @@
 import React, { FC, useState } from "react";
-import { TextField, Button, Box, Divider, IconButton } from "@material-ui/core";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
 import { useForm } from "react-hook-form";
-import Grid from "@material-ui/core/Grid";
-import { yupResolver } from "@hookform/resolvers/yup";
+import Grid from "@mui/material/Grid";
 import * as yup from "yup";
-import { Facebook, Phone } from "@material-ui/icons";
+import { Facebook, Phone } from "@mui/icons-material";
 import { useHistory } from "react-router-dom";
+import { RecaptchaVerifier } from "firebase/auth";
 
 import { useAppDispatch } from "redux/store";
 
 import LoginStyles from "./styles";
 
 import { AuthRepository } from "redux/repository";
+
+import { authFirebase } from "utils/firebase";
+
+import useYupValidationResolver from "utils/helper/validateYup";
 
 type FormValues = {
   email: string;
@@ -28,12 +36,40 @@ const Login: FC = () => {
   const dispatch = useAppDispatch();
   const history = useHistory();
 
+  const resolver = useYupValidationResolver(schema);
+
+  // const handleSetupCapcha = () => {
+  //   try {
+  //     (window as any).recaptchaVerifier = new RecaptchaVerifier(
+  //       "sign-in-button",
+  //       {
+  //         size: "invisible",
+  //         callback: (res: any) => {
+  //           console.log("res", res);
+  //         },
+  //       },
+  //       authFirebase
+  //     );
+  //   } catch (e) {
+  //     console.log(e);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   const timeoutId = setTimeout(() => {
+  //     handleSetupCapcha();
+  //   }, 500);
+  //   return () => {
+  //     clearTimeout(timeoutId);
+  //   };
+  // }, []);
+
   const {
     register,
     formState: { errors },
     handleSubmit,
   } = useForm<FormValues>({
-    resolver: yupResolver(schema),
+    resolver,
   });
   const classes = LoginStyles();
   /**
@@ -75,6 +111,31 @@ const Login: FC = () => {
       });
   };
 
+  const onLoginByPhone = () => {
+    setLoading(true);
+    try {
+      (window as any).recaptchaVerifier = new RecaptchaVerifier(
+        "recaptcha-container",
+        {
+          size: "normal",
+          callback: (res: any) => {
+            console.log("res", res);
+            dispatch(AuthRepository.signinPhoneRequest("234234434"))
+              .then(() => {
+                history.push("/");
+              })
+              .finally(() => {
+                setLoading(false);
+              });
+          },
+        },
+        authFirebase
+      );
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return (
     <div className={classes.root}>
       <Box className={classes.form}>
@@ -82,13 +143,7 @@ const Login: FC = () => {
           <Box className={classes.logo}>Welcome</Box>
         </Grid>
         <form noValidate>
-          <Grid
-            container
-            spacing={3}
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-          >
+          <Grid container spacing={3} direction="row" justifyContent="center" alignItems="center">
             <Grid item xs={12}>
               <TextField
                 error={errors?.email ? true : false}
@@ -108,20 +163,9 @@ const Login: FC = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Grid
-                container
-                spacing={3}
-                direction="column"
-                justifyContent="center"
-                alignItems="center"
-              >
+              <Grid container spacing={3} direction="column" justifyContent="center" alignItems="center">
                 <Grid item xs={12}>
-                  <Button
-                    onClick={handleSubmit(onSubmit)}
-                    variant="contained"
-                    color="primary"
-                    disabled={loading}
-                  >
+                  <Button onClick={handleSubmit(onSubmit)} variant="contained" color="primary" disabled={loading}>
                     Login
                   </Button>
                   <Button
@@ -135,29 +179,17 @@ const Login: FC = () => {
                   </Button>
                 </Grid>
                 <Divider />
+                <div id="recaptcha-container" />
+
                 <p>Other login with</p>
                 <Grid item xs={12}>
-                  <IconButton
-                    onClick={onLoginByGoogle}
-                    className={classes.btn}
-                    color="default"
-                    disabled={loading}
-                  >
+                  <IconButton onClick={onLoginByGoogle} className={classes.btn} color="default" disabled={loading}>
                     G
                   </IconButton>
-                  <IconButton
-                    onClick={onLoginByFacebook}
-                    className={classes.btn}
-                    color="default"
-                    disabled={loading}
-                  >
+                  <IconButton onClick={onLoginByFacebook} className={classes.btn} color="default" disabled={loading}>
                     <Facebook />
                   </IconButton>
-                  <IconButton
-                    className={classes.btn}
-                    color="default"
-                    disabled={loading}
-                  >
+                  <IconButton onClick={onLoginByPhone} className={classes.btn} color="default" disabled={loading}>
                     <Phone />
                   </IconButton>
                 </Grid>

@@ -1,8 +1,9 @@
-import React, { FC, useState } from "react";
-import { TextField, Button, Box } from "@material-ui/core";
+import React, { FC, useState,  } from "react";
+import TextField from "@mui/material/TextField";
+import Button from "@mui/material/Button";
+import Box from "@mui/material/Box";
 import { useForm } from "react-hook-form";
-import Grid from "@material-ui/core/Grid";
-import { yupResolver } from "@hookform/resolvers/yup";
+import Grid from "@mui/material/Grid";
 import * as yup from "yup";
 import { useHistory } from "react-router-dom";
 import { useAppDispatch } from "redux/store";
@@ -10,8 +11,10 @@ import AuthStyles from "./styles";
 
 import { AuthRepository } from "redux/repository";
 
+import useYupValidationResolver from "utils/helper/validateYup";
+
 type FormValues = {
-  email: string;
+  email: any;
   password: string;
 };
 
@@ -21,13 +24,12 @@ const schema = yup.object().shape({
 });
 
 const SignUp: FC = () => {
+  const resolver = useYupValidationResolver(schema);
   const {
     register,
     formState: { errors },
     handleSubmit,
-  } = useForm<FormValues>({
-    resolver: yupResolver(schema),
-  });
+  } = useForm<FormValues>({ resolver });
 
   const classes = AuthStyles();
   const [loading, setLoading] = useState<boolean>(false);
@@ -59,13 +61,7 @@ const SignUp: FC = () => {
           <Box className={classes.logo}>Welcome</Box>
         </Grid>
         <form noValidate>
-          <Grid
-            container
-            spacing={3}
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-          >
+          <Grid container spacing={3} direction="row" justifyContent="center" alignItems="center">
             <Grid item xs={12}>
               <TextField
                 error={errors?.email ? true : false}
@@ -85,21 +81,10 @@ const SignUp: FC = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Grid
-                container
-                spacing={3}
-                direction="column"
-                justifyContent="center"
-                alignItems="center"
-              >
+              <Grid container spacing={3} direction="column" justifyContent="center" alignItems="center">
                 <Grid item xs={12}>
                   <div>
-                    <Button
-                      onClick={handleSubmit(onSubmit)}
-                      variant="contained"
-                      color="primary"
-                      disabled={loading}
-                    >
+                    <Button onClick={handleSubmit(onSubmit)} variant="contained" color="primary" disabled={loading}>
                       SignUp
                     </Button>
                     <Button

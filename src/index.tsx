@@ -3,7 +3,6 @@ import { BrowserRouter } from "react-router-dom";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 
-// import reportWebVitals from "./reportWebVitals";
 import Root from "router";
 import { Layout } from "components";
 import "styles/index.css";

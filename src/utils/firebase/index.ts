@@ -8,10 +8,6 @@ import {
 
 // Your web app's Firebase configuration
 
-console.log('a',process.env.PORT);
-console.log('a',process.env.REACT_APP_FIREBASE_API_KEY);
-
-
 const firebaseConfig = {
   apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "",
 
